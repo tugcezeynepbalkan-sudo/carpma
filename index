@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Çarpma Öğreniyorum - Ultra Premium Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2E7D32;
+            --primary-light: #4CAF50;
+            --primary-dark: #1B5E20;
+            --accent: #FF5722;
+            --accent-hover: #E64A19;
+            --bg-gradient: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 50%, #A5D6A7 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #2C3E50;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Fredoka', 'Nunito', sans-serif;
+            background: var(--bg-gradient);
+            margin: 0;
+            padding: 20px 10px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        /* --- LOGIN OVERLAY / GİRİŞ VE PROFİL YÖNETİMİ --- */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(27, 94, 32, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-card {
+            background: white;
+            padding: 28px 24px;
+            border-radius: 32px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 440px;
+            width: 90%;
+            border: 4px solid #81C784;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .login-card h2 {
+            color: var(--primary-dark);
+            margin-top: 0;
+            margin-bottom: 6px;
+            font-size: 26px;
+        }
+
+        .existing-users-section {
+            margin-bottom: 16px;
+            display: none;
+            text-align: left;
+        }
+
+        .existing-users-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 8px;
+            background: #F1F8E9;
+            border-radius: 16px;
+            border: 2px dashed #AED581;
+        }
+
+        .user-row {
+            background: white;
+            border: 2px solid #81C784;
+            padding: 6px 12px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .user-row:hover {
+            border-color: var(--accent);
+            background: #FFF3E0;
+        }
+
+        .user-info-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            flex-grow: 1;
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 14px;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .icon-action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .icon-action-btn:hover {
+            background: rgba(0,0,0,0.08);
+        }
+
+        .avatar-selection-title {
+            font-size: 14px;
+            color: #555;
+            margin-top: 12px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .avatar-grid {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .avatar-option {
+            width: 52px;
+            height: 52px;
+            font-size: 28px;
+            border-radius: 50%;
+            background: #F1F8E9;
+            border: 3px solid #C8E6C9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .avatar-option:hover {
+            transform: scale(1.15);
+            border-color: var(--primary);
+        }
+
+        .avatar-option.selected {
+            border-color: var(--accent);
+            background: #FFE0B2;
+            transform: scale(1.2);
+            box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3);
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 12px 18px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 18px;
+            border: 3px solid #AED581;
+            border-radius: 16px;
+            outline: none;
+            margin-bottom: 16px;
+            text-align: center;
+            color: var(--primary-dark);
+        }
+
+        .login-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 20px;
+            border-radius: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 0 var(--accent-hover);
+            transition: all 0.15s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #F4511E;
+            transform: translateY(-2px);
+        }
+
+        .secondary-action-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .cancel-edit-btn {
+            background-color: #9E9E9E;
+            box-shadow: 0 6px 0 #616161;
+            display: none;
+        }
+        .cancel-edit-btn:hover {
+            background-color: #757575;
+        }
+
+        /* --- ÖDÜL DÜKKÂNI (SHOP) MODALI --- */
+        .shop-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .shop-card {
+            background: #FFF;
+            border-radius: 32px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 85vh;
+            padding: 24px;
+            box-shadow: 0 24px 50px rgba(0,0,0,0.3);
+            border: 4px solid #FFB300;
+            display: flex;
+            flex-direction: column;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .shop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px dashed #FFE082;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        .shop-header h2 {
+            margin: 0;
+            color: #F57F17;
+            font-size: 24px;
+        }
+
+        .close-shop-btn {
+            background: #FFECB3;
+            border: none;
+            font-size: 18px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: 700;
+            color: #E65100;
+            transition: background 0.2s;
+        }
+        .close-shop-btn:hover {
+            background: #FFE082;
+        }
+
+        .shop-items-list {
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-right: 4px;
+            flex-grow: 1;
+        }
+
+        .shop-item {
+            background: #FFF8E1;
+            border: 2.5px solid #FFE082;
+            border-radius: 20px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            transition: transform 0.2s;
+        }
+
+        .shop-item:hover {
+            transform: scale(1.02);
+            border-color: #FFB300;
+        }
+
+        .shop-item-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .shop-item-icon {
+            font-size: 34px;
+            background: white;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+        }
+
+        .shop-item-details h4 {
+            margin: 0 0 4px 0;
+            color: #5D4037;
+            font-size: 16px;
+        }
+
+        .shop-item-details p {
+            margin: 0;
+            color: #8D6E63;
+            font-size: 13px;
+        }
+
+        .buy-btn {
+            font-family: 'Fredoka', sans-serif;
+            background: #FFB300;
+            color: #3E2723;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #FFA000;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .buy-btn:hover {
+            background: #FFCA28;
+            transform: translateY(-2px);
+        }
+
+        .buy-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .buy-btn.owned {
+            background: #C8E6C9;
+            color: #1B5E20;
+            box-shadow: 0 4px 0 #81C784;
+            cursor: default;
+        }
+
+        .fruit-picker {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 6px;
+            max-width: 160px;
+        }
+
+        .fruit-picker-btn {
+            width: 34px;
+            height: 34px;
+            font-size: 18px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 2px solid #DCEDC8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+
+        .fruit-picker-btn:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+        }
+
+        .fruit-picker-btn.active {
+            border-color: var(--accent);
+            background: #FFE0B2;
+            box-shadow: 0 3px 6px rgba(255, 87, 34, 0.35);
+        }
+
+        .container {
+            max-width: 960px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 28px 32px;
+            border-radius: 32px;
+            box-shadow: 0 24px 48px rgba(27, 94, 32, 0.18), 0 4px 12px rgba(0,0,0,0.05);
+            border: 4px solid #FFFFFF;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        /* --- KULLANICI ARAYÜZÜ VE HAZİNE SANDIĞI STİLLERİ --- */
+        .user-profile-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+            z-index: 10;
+        }
+
+        .user-badge {
+            background: #FFFFFF;
+            border: 2px solid #81C784;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .user-badge:hover {
+            border-color: var(--primary);
+            background: #F1F8E9;
+        }
+
+        .treasure-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+            border: 3px solid #FFB300;
+            padding: 6px 16px 6px 12px;
+            border-radius: 50px;
+            box-shadow: 0 6px 16px rgba(255, 179, 0, 0.35);
+            cursor: pointer;
+            animation: pulseBox 3s infinite alternate ease-in-out;
+            transition: transform 0.2s;
+        }
+
+        .treasure-box:hover {
+            transform: scale(1.05);
+            border-color: #FFA000;
+        }
+
+        .chest-icon {
+            width: 36px;
+            height: 36px;
+            filter: drop-shadow(0 3px 4px rgba(0,0,0,0.2));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .treasure-box.bump .chest-icon {
+            transform: scale(1.4) rotate(-10deg);
+        }
+
+        .coin-count {
+            font-size: 20px;
+            font-weight: 800;
+            color: #E65100;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes pulseBox {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.03); }
+        }
+
+        .coin-reward-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 255, 255, 0.95);
+            border: 4px solid #FFD54F;
+            border-radius: 24px;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .coin-reward-popup.show {
+            transform: translate(-50%, -60%) scale(1);
+            opacity: 1;
+        }
+
+        .coin-reward-popup span {
+            font-size: 26px;
+            font-weight: 800;
+            color: #F57F17;
+        }
+
+        /* MADALYA KAZANIM KUTLAMASI */
+        .medal-celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(27, 94, 32, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .medal-celebration.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .medal-celebration-icon {
+            font-size: 140px;
+            line-height: 1;
+            filter: drop-shadow(0 10px 24px rgba(0,0,0,0.4));
+            will-change: transform, opacity;
+        }
+
+        .medal-celebration-text {
+            margin-top: 18px;
+            font-size: 26px;
+            font-weight: 800;
+            color: #FFFFFF;
+            text-shadow: 0 3px 8px rgba(0,0,0,0.5);
+            max-width: 90%;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            text-align: center;
+            margin: 0 0 22px 0;
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #F1F8E9 0%, #DCEDC8 100%);
+            padding: 14px 22px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border: 2px solid #AED581;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.8);
+        }
+
+        .select-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        select {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 14px;
+            border: 2px solid #81C784;
+            background: white;
+            color: var(--primary-dark);
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        select:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .mode-btn {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 14px;
+            border: none;
+            background: #FFFFFF;
+            color: var(--primary-dark);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 0 #C8E6C9, 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            background: #E8F5E9;
+            box-shadow: 0 6px 0 #C8E6C9, 0 6px 12px rgba(0,0,0,0.08);
+        }
+
+        .mode-btn.active-mode {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 0 var(--primary-dark);
+        }
+
+        .shop-open-btn {
+            background: linear-gradient(135deg, #FFB300 0%, #FFA000 100%);
+            color: #3E2723;
+            box-shadow: 0 4px 0 #E65100, 0 4px 8px rgba(0,0,0,0.08);
+        }
+        .shop-open-btn:hover {
+            background: linear-gradient(135deg, #FFCA28 0%, #FFB300 100%);
+            box-shadow: 0 6px 0 #E65100, 0 6px 12px rgba(0,0,0,0.12);
+        }
+
+        #question-header {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            background: #F9FBE7;
+            padding: 12px 24px;
+            border-radius: 18px;
+            display: block;
+            box-sizing: border-box;
+            border: 2px dashed #C0CA33;
+            box-shadow: 0 4px 10px rgba(192, 202, 51, 0.15);
+        }
+
+        .interactive-stage {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 24px;
+            background: transparent;
+            padding: 20px 10px;
+            border-radius: 28px;
+            min-height: 320px;
+            margin-bottom: 25px;
+            position: relative;
+            border: none;
+            overflow: hidden;
+        }
+
+        .tree-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            width: 280px;
+            height: 310px;
+        }
+
+        .tree-svg-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            filter: drop-shadow(0 14px 18px rgba(0,0,0,0.18));
+        }
+
+        .tree-apples-container {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            width: 220px;
+            height: 160px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            gap: 4px;
+            z-index: 2;
+        }
+
+        .basket-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            align-items: flex-end;
+            z-index: 2;
+            margin-bottom: 5px;
+        }
+
+        .basket-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            width: 150px;
+            min-height: 120px;
+        }
+
+        .basket-svg-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            filter: drop-shadow(0 10px 14px rgba(0,0,0,0.2));
+        }
+
+        .basket {
+            width: 150px;
+            min-height: 110px;
+            border-radius: 12px;
+            padding: 26px 14px 14px 14px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: flex-start;
+            gap: 4px;
+            position: relative;
+            z-index: 2;
+            transition: transform 0.2s ease;
+        }
+
+        .basket.drag-over {
+            transform: scale(1.08);
+        }
+
+        .basket-title {
+            position: absolute;
+            bottom: -14px;
+            background: linear-gradient(135deg, #4E342E 0%, #21130D 100%);
+            color: #FFF;
+            font-size: 13px;
+            padding: 4px 16px;
+            border-radius: 14px;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+            z-index: 4;
+            border: 1.5px solid #A1887F;
+        }
+
+        .apple {
+            width: 34px;
+            height: 34px;
+            user-select: none;
+            cursor: grab;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 3;
+        }
+
+        .apple svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.22));
+        }
+
+        .apple:hover {
+            transform: scale(1.3) rotate(-8deg);
+        }
+
+        .apple:active {
+            cursor: grabbing;
+            transform: scale(1.4);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .explanation-box {
+            text-align: center;
+            font-size: 22px;
+            line-height: 1.6;
+            margin: 20px 0;
+            color: var(--text-main);
+        }
+
+        .math-input {
+            width: 64px;
+            height: 56px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            border: 3px solid #81C784;
+            border-radius: 16px;
+            outline: none;
+            background-color: #FFFFFF;
+            color: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transition: all 0.2s ease;
+        }
+
+        .math-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(255, 87, 34, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .action-btn {
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 20px;
+            border-radius: 18px;
+            margin-top: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 0 var(--accent-hover), 0 10px 22px rgba(255, 87, 34, 0.35);
+            transition: all 0.15s ease;
+        }
+
+        .action-btn:hover {
+            background-color: #F4511E;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 var(--accent-hover), 0 12px 24px rgba(255, 87, 34, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 var(--accent-hover);
+        }
+
+        .feedback {
+            font-size: 22px;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 15px;
+            min-height: 38px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        .nav-btn {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 12px 26px;
+            border-radius: 16px;
+            border: 2px solid #C8E6C9;
+            background: #FFF;
+            color: var(--primary-dark);
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: #E8F5E9;
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY / İSİM, AVATAR, GÜNCELLEME VE SİLME EKRANI -->
+<div class="login-overlay" id="login-modal">
+    <div class="login-card">
+        <h2 id="login-title">👋 Hoş Geldin!</h2>
+        
+        <!-- KAYITLI PROFİLLER LİSTESİ -->
+        <div class="existing-users-section" id="existing-users-container">
+            <div class="avatar-selection-title">Kayıtlı Profiller:</div>
+            <div class="existing-users-list" id="existing-users-list"></div>
+        </div>
+
+        <div class="avatar-selection-title" id="avatar-label">Karakterini Seç:</div>
+        <div class="avatar-grid" id="avatar-selector">
+            <div class="avatar-option selected" onclick="selectAvatar('🦁')">🦁</div>
+            <div class="avatar-option" onclick="selectAvatar('🦊')">🦊</div>
+            <div class="avatar-option" onclick="selectAvatar('🐼')">🐼</div>
+            <div class="avatar-option" onclick="selectAvatar('🦄')">🦄</div>
+            <div class="avatar-option" onclick="selectAvatar('🚀')">🚀</div>
+            <div class="avatar-option" onclick="selectAvatar('👑')">👑</div>
+        </div>
+        
+        <input type="text" id="username-input" class="login-input" placeholder="Adını Buraya Yaz..." maxlength="20" autofocus onkeyup="if(event.key==='Enter') handleLogin()">
+        
+        <div class="secondary-action-row">
+            <button class="login-btn cancel-edit-btn" id="cancel-edit-btn" onclick="cancelEditMode()">İptal</button>
+            <button class="login-btn" id="login-submit-btn" onclick="handleLogin()">Oyuna Başla! 🚀</button>
+        </div>
+    </div>
+</div>
+
+<!-- ÖDÜL DÜKKÂNI MODALI (HARCAMA MODU) -->
+<div class="shop-modal" id="shop-modal">
+    <div class="shop-card">
+        <div class="shop-header">
+            <h2>🛒 Ödül Dükkânı</h2>
+            <button class="close-shop-btn" onclick="toggleShop(false)">✕</button>
+        </div>
+        <div style="margin-bottom: 12px; font-size: 15px; color: #795548; font-weight: 600; text-align: center;">
+            Biriktirdiğin altınlarla harika ödüller açabilirsin! 🪙 <span id="shop-coin-balance" style="color:#E65100; font-weight:800;">0</span>
+        </div>
+        <div class="shop-items-list" id="shop-items-container">
+            <!-- Ürünler dinamik doldurulacak -->
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- KULLANICI ROZETİ VE HAZİNE SANDIĞI -->
+    <div class="user-profile-bar">
+        <div class="user-badge" onclick="showLoginModal()" title="Kullanıcı Değiştir / Düzenle">
+            <span id="display-avatar">🦁</span>
+            <span id="display-username">Öğrenci</span>
+            <span id="display-medal" style="display:none; font-size:18px; margin-left:2px;"></span>
+            <small style="color:#888; font-size:11px;">(Değiştir)</small>
+        </div>
+
+        <div class="treasure-box" id="treasure-box" onclick="toggleShop(true)" title="Ödül Dükkânını Aç!">
+            <svg class="chest-icon" viewBox="0 0 100 100">
+                <path d="M15 42 L85 42 L85 82 Q85 88 78 88 L22 88 Q15 88 15 82 Z" fill="#8D6E63" stroke="#3E2723" stroke-width="4"/>
+                <path d="M10 42 C10 22 25 15 50 15 C75 15 90 22 90 42 Z" fill="#A1887F" stroke="#3E2723" stroke-width="4"/>
+                <rect x="42" y="38" width="16" height="22" rx="4" fill="#FFD54F" stroke="#FF8F00" stroke-width="3"/>
+                <circle cx="50" cy="46" r="3" fill="#5D4037"/>
+                <path d="M20 42 L20 86 M80 42 L80 86" stroke="#FFD54F" stroke-width="6"/>
+            </svg>
+            <span class="coin-count" id="coin-counter">0</span>
+        </div>
+    </div>
+
+    <!-- ANLIK KAZANILAN ALTIN POPUP EFEKTİ -->
+    <div class="coin-reward-popup" id="reward-popup">
+        <svg width="40" height="40" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="42" fill="#FFD54F" stroke="#FF8F00" stroke-width="6"/>
+            <circle cx="50" cy="50" r="32" fill="#FFCA28"/>
+            <text x="50" y="62" font-size="40" font-weight="bold" fill="#E65100" text-anchor="middle">★</text>
+        </svg>
+        <span id="reward-text">+10 Altın!</span>
+    </div>
+
+    <!-- MADALYA KAZANIM KUTLAMASI: kocaman rozet belirir, sonra küçülerek profildeki yerine akar -->
+    <div class="medal-celebration" id="medal-celebration">
+        <div class="medal-celebration-icon" id="medal-celebration-icon">🥇</div>
+        <div class="medal-celebration-text" id="medal-celebration-text">Rozet Kazanıldı!</div>
+    </div>
+
+    <h1>
+        <span style="display:inline-block; width:36px; height:36px;">
+            <svg viewBox="0 0 100 100">
+                <path d="M50 20 C50 5, 65 5, 60 20 C75 10, 95 25, 90 50 C85 80, 65 95, 50 95 C35 95, 15 80, 10 50 C5 25, 25 10, 40 20 Z" fill="#E53935"/>
+                <path d="M50 20 C48 10, 52 2, 58 2" stroke="#5D4037" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <path d="M54 10 Q65 5 70 12 Q60 18 54 10 Z" fill="#43A047"/>
+            </svg>
+        </span>
+        Çarpma Öğreniyorum
+    </h1>
+
+    <div class="controls">
+        <div class="select-wrapper">
+            <label>Tablo Seç:</label>
+            <select id="table-select" onchange="resetCurrentQuestion()">
+            </select>
+        </div>
+        <div class="mode-buttons">
+            <button id="btn-learn" class="mode-btn active-mode" onclick="setMode('learn')">1. Öğren</button>
+            <button id="btn-measure" class="mode-btn" onclick="setMode('measure')">2. Ölç</button>
+            <button id="btn-memorize" class="mode-btn" onclick="setMode('memorize')">3. Ezberle</button>
+            <button class="mode-btn shop-open-btn" onclick="toggleShop(true)">🛒 Dükkân</button>
+        </div>
+    </div>
+
+    <div id="question-header" style="display: none;"></div>
+
+    <div class="interactive-stage" id="stage-area">
+    </div>
+
+    <div class="explanation-box" id="content-area">
+    </div>
+
+    <div class="feedback" id="feedback-area"></div>
+
+    <div class="nav-buttons">
+        <button class="nav-btn" onclick="prevQuestion()" id="btn-prev">⬅️ Önceki</button>
+        <button class="nav-btn" onclick="nextQuestion()" id="btn-next">Sonraki ➡️</button>
+    </div>
+</div>
+
+<script>
+    let selectedTable = 2;
+    let currentTable = 2;
+    let currentMultiplier = 1;
+    let currentMode = 'learn';
+    let measureStep = 0;
+    let treeApples = 0;
+    let basketContents = [];
+
+    /* KULLANICI, AVATAR, ENVANTER VE DÜZENLEME DEĞİŞKENLERİ */
+    let currentUser = '';
+    let currentAvatar = '🦁';
+    let userScores = {};
+    let userAvatars = {};
+    let userInventory = {}; // Hangi kullanıcı hangi ürünleri almış
+    let userTotalEarned = {}; // Kullanıcının harcasa bile hiç azalmayan toplam kazanılmış puanı (madalya hesaplaması için)
+    let userMedals = {}; // Kullanıcının kazandığı madalya rütbeleri (kalıcıdır, puan harcansa bile kaybolmaz)
+    let userFruitChoice = {}; // Kullanıcının "Meyve Seçimi" ödülünü aldıktan sonra seçtiği meyve (varsayılan: elma)
+    let editingOriginalName = null;
+    let hasEarnedRewardForCurrent = false;
+
+    /* DÜKKÂN ÜRÜN LİSTESİ */
+    const SHOP_ITEMS = [
+        { id: 'crown', name: 'Kraliyet Tacı', desc: 'İsminin yanına görkemli bir taç ekler', cost: 50, icon: '💎' },
+        { id: 'rocket', name: 'Süpersonik Roket', desc: 'Uzay temalı özel rozet rozeti', cost: 80, icon: '🛸' },
+        { id: 'unicorn', name: 'Sihirli Unicorn', desc: 'Eşsiz masalsı profil simgesi', cost: 120, icon: '🌈' },
+        { id: 'fruit_selector', name: 'Meyve Seçimi', desc: 'Ağaçtaki ve sepetlerdeki elma yerine farklı bir meyve seçme hakkı kazandırır', cost: 70, icon: '🍊' }
+    ];
+
+    /* ÇARPMA KRALI MADALYASI - KAZANILAN TOPLAM PUANA GÖRE DERECELER (dükkandan alınmaz, otomatik kazanılır) */
+    const MEDAL_TIERS = [
+        { id: 'medal_1', threshold: 50, name: 'Çarpma Kralı Madalyası I - Bronz', icon: '🥉' },
+        { id: 'medal_2', threshold: 100, name: 'Çarpma Kralı Madalyası II - Gümüş', icon: '🥈' },
+        { id: 'medal_3', threshold: 150, name: 'Çarpma Kralı Madalyası III - Altın', icon: '🥇' }
+    ];
+
+    /* MEYVE SEÇİMİ ÖDÜLÜ - dükkandan alınınca elma yerine farklı meyveler seçilebilir
+       NOT: Her meyve öğesi kendine özgü TEKİL bir gradyan id'si ile üretilir; aksi halde
+       tarayıcı aynı id'yi paylaşan farklı meyvelerin renklerini birbirine karıştırabiliyordu
+       (ör. Portakal seçilince ekranda mor/Üzüm rengi görünmesi). */
+    let fruitSvgUidCounter = 0;
+
+    const FRUIT_COLORS = {
+        elma: { stops: ['#FF5252', '#E53935', '#B71C1C'], leaf: '#4CAF50' },
+        portakal: { stops: ['#FFCC80', '#FFA726', '#E65100'], leaf: '#66BB6A' },
+        uzum: { stops: ['#CE93D8', '#8E24AA', '#4A148C'], leaf: '#558B2F' },
+        armut: { stops: ['#F0F4C3', '#C0CA33', '#827717'], leaf: '#689F38' }
+    };
+
+    function buildFruitSVG(fruitId) {
+        const colors = FRUIT_COLORS[fruitId] || FRUIT_COLORS.elma;
+        fruitSvgUidCounter++;
+        const gid = `fruitGrad-${fruitId}-${fruitSvgUidCounter}`;
+        return `
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="${gid}" cx="35%" cy="30%" r="70%">
+                        <stop offset="0%" stop-color="${colors.stops[0]}"/>
+                        <stop offset="60%" stop-color="${colors.stops[1]}"/>
+                        <stop offset="100%" stop-color="${colors.stops[2]}"/>
+                    </radialGradient>
+                </defs>
+                <path d="M50 22 C52 8, 68 8, 62 22 C78 12, 96 28, 92 54 C86 82, 66 96, 50 96 C34 96, 14 82, 8 54 C4 28, 22 12, 38 22 Z" fill="url(#${gid})"/>
+                <path d="M50 22 Q48 10 56 4" stroke="#4E342E" stroke-width="5" fill="none" stroke-linecap="round"/>
+                <path d="M52 12 Q68 5 72 15 Q60 20 52 12 Z" fill="${colors.leaf}"/>
+                <ellipse cx="32" cy="38" rx="6" ry="12" fill="rgba(255,255,255,0.25)" transform="rotate(-25 32 38)"/>
+            </svg>
+        `;
+    }
+
+    const FRUITS = {
+        elma: { id: 'elma', name: 'Elma', icon: '🍎' },
+        portakal: { id: 'portakal', name: 'Portakal', icon: '🍊' },
+        uzum: { id: 'uzum', name: 'Üzüm', icon: '🍇' },
+        armut: { id: 'armut', name: 'Armut', icon: '🍐' }
+    };
+
+    function getSelectedFruit() {
+        const choice = (currentUser && userFruitChoice[currentUser]) || 'elma';
+        return FRUITS[choice] || FRUITS.elma;
+    }
+
+    function selectFruit(fruitId) {
+        if (!currentUser || !FRUITS[fruitId]) return;
+
+        // Seçimi onayla: elmaları anında seçilen meyveyle değiştir
+        userFruitChoice[currentUser] = fruitId;
+
+        // Ödül kullanıldı: dükkandaki bu madde tekrar pasif hale gelsin (yeniden satın alınması gerekir)
+        if (userInventory[currentUser]) {
+            const idx = userInventory[currentUser].indexOf('fruit_selector');
+            if (idx > -1) userInventory[currentUser].splice(idx, 1);
+        }
+
+        saveUserData();
+        renderShopItems();
+        if (currentMode !== 'memorize') renderStage();
+
+        alert(`${FRUITS[fruitId].icon} Meyve seçimin onaylandı! Artık ${FRUITS[fruitId].name.toLowerCase()} kullanılıyor.\nBaşka bir meyveye geçmek için ödülü tekrar satın almalısın.`);
+    }
+
+
+    const TREE_SVG = `
+        <svg class="tree-svg-bg" viewBox="0 0 280 310">
+            <defs>
+                <linearGradient id="trunk3D" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#793F14"/>
+                    <stop offset="35%" stop-color="#A0522D"/>
+                    <stop offset="70%" stop-color="#6E360E"/>
+                    <stop offset="100%" stop-color="#421E05"/>
+                </linearGradient>
+                <radialGradient id="foliageBack" cx="50%" cy="40%" r="60%">
+                    <stop offset="0%" stop-color="#4CAF50"/>
+                    <stop offset="70%" stop-color="#2E7D32"/>
+                    <stop offset="100%" stop-color="#1B5E20"/>
+                </radialGradient>
+                <radialGradient id="foliageFront" cx="35%" cy="30%" r="65%">
+                    <stop offset="0%" stop-color="#81C784"/>
+                    <stop offset="55%" stop-color="#43A047"/>
+                    <stop offset="100%" stop-color="#1B5E20"/>
+                </radialGradient>
+                <radialGradient id="foliageHighlight" cx="40%" cy="30%" r="50%">
+                    <stop offset="0%" stop-color="#C8E6C9"/>
+                    <stop offset="100%" stop-color="#66BB6A"/>
+                </radialGradient>
+            </defs>
+            <path d="M115 160 Q122 230 92 295 L188 295 Q158 230 165 160 Z" fill="url(#trunk3D)" stroke="#2B1303" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M125 190 Q98 168 78 175" stroke="#5C2E0B" stroke-width="8" fill="none" stroke-linecap="round"/>
+            <path d="M155 190 Q182 165 202 170" stroke="#421E05" stroke-width="8" fill="none" stroke-linecap="round"/>
+            <g stroke="#0F380F" stroke-width="3">
+                <circle cx="65" cy="145" r="45" fill="url(#foliageBack)"/>
+                <circle cx="215" cy="145" r="45" fill="url(#foliageBack)"/>
+                <circle cx="45" cy="95" r="42" fill="url(#foliageBack)"/>
+                <circle cx="235" cy="95" r="42" fill="url(#foliageBack)"/>
+            </g>
+            <g stroke="#1B5E20" stroke-width="4">
+                <circle cx="95" cy="75" r="52" fill="url(#foliageFront)"/>
+                <circle cx="185" cy="75" r="52" fill="url(#foliageFront)"/>
+                <circle cx="140" cy="55" r="58" fill="url(#foliageHighlight)"/>
+                <circle cx="82" cy="125" r="48" fill="url(#foliageFront)"/>
+                <circle cx="198" cy="125" r="48" fill="url(#foliageFront)"/>
+                <circle cx="140" cy="135" r="54" fill="url(#foliageFront)"/>
+            </g>
+        </svg>
+    `;
+
+    const BASKET_SVG = `
+        <svg class="basket-svg-bg" viewBox="0 0 150 110" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="basketBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#D7CCC8"/>
+                    <stop offset="15%" stop-color="#A1887F"/>
+                    <stop offset="50%" stop-color="#6D4C41"/>
+                    <stop offset="100%" stop-color="#3E2723"/>
+                </linearGradient>
+                <linearGradient id="basketRimGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#8D6E63"/>
+                    <stop offset="50%" stop-color="#D7CCC8"/>
+                    <stop offset="100%" stop-color="#5D4037"/>
+                </linearGradient>
+            </defs>
+            <path d="M12 24 L24 92 Q29 102 75 102 Q121 102 126 92 L138 24 Z" fill="url(#basketBodyGrad)" stroke="#21130D" stroke-width="4" stroke-linejoin="round"/>
+            <rect x="5" y="10" width="140" height="16" rx="8" fill="url(#basketRimGrad)" stroke="#21130D" stroke-width="4"/>
+            <path d="M24 92 Q75 105 126 92" stroke="#100905" stroke-width="5" fill="none" opacity="0.9"/>
+        </svg>
+    `;
+
+    window.onload = function() {
+        loadUserData();
+        const lastUser = localStorage.getItem('math_app_last_user');
+        if (lastUser && userScores[lastUser] !== undefined) {
+            currentUser = lastUser;
+            currentAvatar = userAvatars[lastUser] || '🦁';
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('display-username').innerText = currentUser;
+            document.getElementById('display-avatar').innerText = currentAvatar;
+            updateCoinDisplay();
+            updateProfileBadgeDisplay();
+        } else {
+            showLoginModal();
+        }
+
+        updateTableDropdown();
+        render();
+    };
+
+    /* DÜKKÂN KONTROLÜ VE YÖNETİMİ */
+    function toggleShop(open) {
+        const modal = document.getElementById('shop-modal');
+        if (open) {
+            if (!currentUser) {
+                showLoginModal();
+                return;
+            }
+            renderShopItems();
+            document.getElementById('shop-coin-balance').innerText = userScores[currentUser] || 0;
+            modal.style.display = 'flex';
+        } else {
+            modal.style.display = 'none';
+        }
+    }
+
+    function renderShopItems() {
+        const container = document.getElementById('shop-items-container');
+        container.innerHTML = '';
+
+        if (!userInventory[currentUser]) {
+            userInventory[currentUser] = [];
+        }
+
+        SHOP_ITEMS.forEach(item => {
+            const isOwned = userInventory[currentUser].includes(item.id);
+            const userCoins = userScores[currentUser] || 0;
+            const canAfford = userCoins >= item.cost;
+
+            let row = document.createElement('div');
+            row.className = 'shop-item';
+
+            let actionHTML;
+            if (item.id === 'fruit_selector' && isOwned) {
+                const activeFruit = userFruitChoice[currentUser] || 'elma';
+                actionHTML = `
+                    <div class="fruit-picker">
+                        ${Object.values(FRUITS).map(fruit => `
+                            <button class="fruit-picker-btn ${fruit.id === activeFruit ? 'active' : ''}"
+                                title="${fruit.name}" onclick="selectFruit('${fruit.id}')">${fruit.icon}</button>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (isOwned) {
+                actionHTML = `<button class="buy-btn owned" disabled>Sahipsin ✅</button>`;
+            } else {
+                actionHTML = `<button class="buy-btn" ${!canAfford ? 'style="opacity:0.6;"' : ''} onclick="buyShopItem('${item.id}', ${item.cost})">${item.cost} 🪙 Al</button>`;
+            }
+
+            row.innerHTML = `
+                <div class="shop-item-info">
+                    <div class="shop-item-icon">${item.icon}</div>
+                    <div class="shop-item-details">
+                        <h4>${item.name}</h4>
+                        <p>${item.desc}</p>
+                    </div>
+                </div>
+                <div>
+                    ${actionHTML}
+                </div>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    function buyShopItem(itemId, cost) {
+        const userCoins = userScores[currentUser] || 0;
+        if (userCoins < cost) {
+            alert('Bu ödülü almak için yeterli altınlı altın birikimin yok! Daha çok soru çözmelisin.');
+            return;
+        }
+
+        userScores[currentUser] = userCoins - cost;
+        if (!userInventory[currentUser]) userInventory[currentUser] = [];
+        userInventory[currentUser].push(itemId);
+
+        saveUserData();
+        updateCoinDisplay();
+        document.getElementById('shop-coin-balance').innerText = userScores[currentUser];
+        renderShopItems();
+        
+        alert('🎉 Harika! Ödülü başarıyla satın aldın!');
+    }
+
+    /* AVATAR VE KULLANICI YÖNETİMİ */
+    function selectAvatar(avatarEmoji) {
+        currentAvatar = avatarEmoji;
+        document.querySelectorAll('.avatar-option').forEach(el => {
+            if (el.innerText === avatarEmoji) {
+                el.classList.add('selected');
+            } else {
+                el.classList.remove('selected');
+            }
+        });
+    }
+
+    function renderExistingUsers() {
+        const container = document.getElementById('existing-users-container');
+        const list = document.getElementById('existing-users-list');
+        list.innerHTML = '';
+
+        const userNames = Object.keys(userScores);
+        if (userNames.length > 0) {
+            container.style.display = 'block';
+            userNames.forEach(name => {
+                const avatar = userAvatars[name] || '🦁';
+                const coins = userScores[name] || 0;
+                const medal = getHighestMedal(name);
+                
+                let row = document.createElement('div');
+                row.className = 'user-row';
+                row.innerHTML = `
+                    <div class="user-info-left" onclick="quickLogin('${name}')">
+                        <span style="font-size:20px;">${avatar}</span>
+                        <span>${name}</span>
+                        ${medal ? `<span title="${medal.name}">${medal.icon}</span>` : ''}
+                        <small style="color:#F57F17; font-weight:600;">(${coins} 🪙)</small>
+                    </div>
+                    <div class="user-actions">
+                        <button class="icon-action-btn" title="Profili Düzenle" onclick="startEditUser('${name}')">✏️</button>
+                        <button class="icon-action-btn" title="Profili Sil" onclick="deleteUser('${name}')">🗑️</button>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
+    function quickLogin(name) {
+        currentUser = name;
+        currentAvatar = userAvatars[name] || '🦁';
+        localStorage.setItem('math_app_last_user', currentUser);
+        
+        document.getElementById('display-username').innerText = currentUser;
+        document.getElementById('display-avatar').innerText = currentAvatar;
+        document.getElementById('login-modal').style.display = 'none';
+        updateCoinDisplay();
+        updateProfileBadgeDisplay();
+    }
+
+    function showLoginModal() {
+        cancelEditMode();
+        renderExistingUsers();
+        document.getElementById('login-modal').style.display = 'flex';
+        const input = document.getElementById('username-input');
+        input.value = '';
+        selectAvatar('🦁');
+        setTimeout(() => input.focus(), 100);
+    }
+
+    function startEditUser(name) {
+        editingOriginalName = name;
+        document.getElementById('login-title').innerText = `✏️ Profili Düzenle: ${name}`;
+        document.getElementById('login-submit-btn').innerText = 'Değişiklikleri Kaydet';
+        document.getElementById('cancel-edit-btn').style.display = 'block';
+
+        const input = document.getElementById('username-input');
+        input.value = name;
+        input.focus();
+
+        const avatar = userAvatars[name] || '🦁';
+        selectAvatar(avatar);
+    }
+
+    function cancelEditMode() {
+        editingOriginalName = null;
+        document.getElementById('login-title').innerText = '👋 Hoş Geldin!';
+        document.getElementById('login-submit-btn').innerText = 'Oyuna Başla! 🚀';
+        document.getElementById('cancel-edit-btn').style.display = 'none';
+        document.getElementById('username-input').value = '';
+        selectAvatar('🦁');
+        renderExistingUsers();
+    }
+
+    function deleteUser(name) {
+        if (confirm(`"${name}" profilini ve tüm altınlarını silmek istediğine emin misin?`)) {
+            delete userScores[name];
+            delete userAvatars[name];
+            delete userInventory[name];
+            delete userTotalEarned[name];
+            delete userMedals[name];
+            delete userFruitChoice[name];
+            saveUserData();
+
+            if (currentUser === name) {
+                currentUser = '';
+                localStorage.removeItem('math_app_last_user');
+            }
+
+            renderExistingUsers();
+            if (!currentUser && Object.keys(userScores).length === 0) {
+                cancelEditMode();
+            }
+        }
+    }
+
+    function handleLogin() {
+        const input = document.getElementById('username-input');
+        const name = input.value.trim();
+
+        if (!name) {
+            alert('Lütfen bir isim giriniz!');
+            return;
+        }
+
+        if (editingOriginalName) {
+            if (name !== editingOriginalName && userScores[name] !== undefined) {
+                alert('Bu isimde başka bir profil zaten var!');
+                return;
+            }
+
+            const scoreToKeep = userScores[editingOriginalName] || 0;
+            const invToKeep = userInventory[editingOriginalName] || [];
+            const totalEarnedToKeep = userTotalEarned[editingOriginalName] || 0;
+            const medalsToKeep = userMedals[editingOriginalName] || [];
+            const fruitToKeep = userFruitChoice[editingOriginalName] || 'elma';
+            const chosenAvatar = currentAvatar; // cancelEditMode() avatarı sıfırlamadan önce seçimi sakla
+            
+            if (name !== editingOriginalName) {
+                delete userScores[editingOriginalName];
+                delete userAvatars[editingOriginalName];
+                delete userInventory[editingOriginalName];
+                delete userTotalEarned[editingOriginalName];
+                delete userMedals[editingOriginalName];
+                delete userFruitChoice[editingOriginalName];
+            }
+
+            userScores[name] = scoreToKeep;
+            userAvatars[name] = chosenAvatar;
+            userInventory[name] = invToKeep;
+            userTotalEarned[name] = totalEarnedToKeep;
+            userMedals[name] = medalsToKeep;
+            userFruitChoice[name] = fruitToKeep;
+            currentUser = name;
+
+            cancelEditMode();
+            currentAvatar = chosenAvatar; // cancelEditMode() modalı sıfırlarken currentAvatar'ı da 🦁 yapıyordu, gerçek seçimi geri yüklüyoruz
+        } else {
+            currentUser = name;
+            if (userScores[currentUser] === undefined) {
+                userScores[currentUser] = 0;
+            }
+            userAvatars[currentUser] = currentAvatar;
+            if (!userInventory[currentUser]) {
+                userInventory[currentUser] = [];
+            }
+            if (userTotalEarned[currentUser] === undefined) {
+                userTotalEarned[currentUser] = 0;
+            }
+            if (!userMedals[currentUser]) {
+                userMedals[currentUser] = [];
+            }
+            if (!userFruitChoice[currentUser]) {
+                userFruitChoice[currentUser] = 'elma';
+            }
+        }
+
+        saveUserData();
+        localStorage.setItem('math_app_last_user', currentUser);
+        document.getElementById('display-username').innerText = currentUser;
+        document.getElementById('display-avatar').innerText = currentAvatar;
+        document.getElementById('login-modal').style.display = 'none';
+        updateCoinDisplay();
+        updateProfileBadgeDisplay();
+    }
+
+    function loadUserData() {
+        const savedScores = localStorage.getItem('math_app_user_scores');
+        if (savedScores) userScores = JSON.parse(savedScores);
+        else userScores = {};
+
+        const savedAvatars = localStorage.getItem('math_app_user_avatars');
+        if (savedAvatars) userAvatars = JSON.parse(savedAvatars);
+        else userAvatars = {};
+
+        const savedInv = localStorage.getItem('math_app_user_inventory');
+        if (savedInv) userInventory = JSON.parse(savedInv);
+        else userInventory = {};
+
+        const savedTotalEarned = localStorage.getItem('math_app_user_total_earned');
+        if (savedTotalEarned) userTotalEarned = JSON.parse(savedTotalEarned);
+        else userTotalEarned = {};
+
+        const savedMedals = localStorage.getItem('math_app_user_medals');
+        if (savedMedals) userMedals = JSON.parse(savedMedals);
+        else userMedals = {};
+
+        const savedFruitChoice = localStorage.getItem('math_app_user_fruit_choice');
+        if (savedFruitChoice) userFruitChoice = JSON.parse(savedFruitChoice);
+        else userFruitChoice = {};
+    }
+
+    function saveUserData() {
+        localStorage.setItem('math_app_user_scores', JSON.stringify(userScores));
+        localStorage.setItem('math_app_user_avatars', JSON.stringify(userAvatars));
+        localStorage.setItem('math_app_user_inventory', JSON.stringify(userInventory));
+        localStorage.setItem('math_app_user_total_earned', JSON.stringify(userTotalEarned));
+        localStorage.setItem('math_app_user_medals', JSON.stringify(userMedals));
+        localStorage.setItem('math_app_user_fruit_choice', JSON.stringify(userFruitChoice));
+    }
+
+    function updateCoinDisplay() {
+        const currentScore = userScores[currentUser] || 0;
+        document.getElementById('coin-counter').innerText = currentScore;
+    }
+
+    function addRewardCoins(amount) {
+        if (hasEarnedRewardForCurrent) return;
+        hasEarnedRewardForCurrent = true;
+
+        userScores[currentUser] = (userScores[currentUser] || 0) + amount;
+        userTotalEarned[currentUser] = (userTotalEarned[currentUser] || 0) + amount;
+        saveUserData();
+        updateCoinDisplay();
+
+        const box = document.getElementById('treasure-box');
+        box.classList.add('bump');
+        setTimeout(() => box.classList.remove('bump'), 400);
+
+        const popup = document.getElementById('reward-popup');
+        document.getElementById('reward-text').innerText = `+${amount} Altın!`;
+        popup.classList.add('show');
+
+        setTimeout(() => {
+            popup.classList.remove('show');
+        }, 1600);
+
+        checkMedalUnlocks();
+    }
+
+    /* MADALYA (RÜTBE) SİSTEMİ - Toplam kazanılan puana göre otomatik kazanılır, dükkanda satılmaz */
+    function checkMedalUnlocks() {
+        if (!currentUser) return;
+        if (!userMedals[currentUser]) userMedals[currentUser] = [];
+
+        const totalEarned = userTotalEarned[currentUser] || 0;
+        const newlyUnlocked = [];
+
+        MEDAL_TIERS.forEach(tier => {
+            if (totalEarned >= tier.threshold && !userMedals[currentUser].includes(tier.id)) {
+                userMedals[currentUser].push(tier.id);
+                newlyUnlocked.push(tier);
+            }
+        });
+
+        if (newlyUnlocked.length > 0) {
+            saveUserData();
+            queueMedalCelebrations(newlyUnlocked);
+        }
+    }
+
+    /* Birden fazla rütbe aynı anda kazanılırsa her birini sırayla, kutlamalı bir animasyonla göster */
+    function queueMedalCelebrations(tiers) {
+        let i = 0;
+        function playNext() {
+            if (i >= tiers.length) {
+                updateProfileBadgeDisplay();
+                return;
+            }
+            const tier = tiers[i];
+            i++;
+            setTimeout(() => celebrateMedal(tier, playNext), 300);
+        }
+        playNext();
+    }
+
+    /* Kocaman rozet ekranın ortasında belirir, sonra küçülerek ismin yanındaki yerine akar */
+    function celebrateMedal(tier, onComplete) {
+        const targetEl = document.getElementById('display-medal');
+        const overlay = document.getElementById('medal-celebration');
+        const bigIcon = document.getElementById('medal-celebration-icon');
+        const bigText = document.getElementById('medal-celebration-text');
+
+        // Hedef rozeti (ismin yanındaki span) konumunu ölçebilmek için görünmez şekilde hazırla
+        targetEl.innerText = tier.icon;
+        targetEl.title = tier.name;
+        targetEl.style.display = 'inline';
+        targetEl.style.visibility = 'hidden';
+
+        bigIcon.innerText = tier.icon;
+        bigText.innerText = tier.name;
+        bigIcon.style.transition = 'none';
+        bigIcon.style.transform = 'scale(0.3)';
+        bigIcon.style.opacity = '0';
+        bigText.style.transition = 'none';
+        bigText.style.opacity = '0';
+
+        overlay.style.display = 'flex';
+        void overlay.offsetWidth; // reflow - animasyonun baştan oynamasını garantile
+        overlay.classList.add('show');
+
+        requestAnimationFrame(() => {
+            bigIcon.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease';
+            bigIcon.style.transform = 'scale(1)';
+            bigIcon.style.opacity = '1';
+            bigText.style.transition = 'opacity 0.4s ease 0.15s';
+            bigText.style.opacity = '1';
+        });
+
+        setTimeout(() => {
+            const targetRect = targetEl.getBoundingClientRect();
+            const iconRect = bigIcon.getBoundingClientRect();
+
+            const targetCenterX = targetRect.left + targetRect.width / 2;
+            const targetCenterY = targetRect.top + targetRect.height / 2;
+            const iconCenterX = iconRect.left + iconRect.width / 2;
+            const iconCenterY = iconRect.top + iconRect.height / 2;
+
+            const deltaX = targetCenterX - iconCenterX;
+            const deltaY = targetCenterY - iconCenterY;
+            const targetSize = Math.max(targetRect.width, 18);
+            const scaleRatio = targetSize / iconRect.width;
+
+            bigText.style.transition = 'opacity 0.3s ease';
+            bigText.style.opacity = '0';
+
+            bigIcon.style.transition = 'transform 0.8s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.5s ease 0.4s';
+            bigIcon.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleRatio})`;
+
+            setTimeout(() => { bigIcon.style.opacity = '0'; }, 500);
+
+            setTimeout(() => {
+                overlay.classList.remove('show');
+                overlay.style.display = 'none';
+                targetEl.style.visibility = 'visible';
+                if (onComplete) onComplete();
+            }, 950);
+        }, 1400);
+    }
+
+    function getHighestMedal(name) {
+        const earned = userMedals[name] || [];
+        let highest = null;
+        MEDAL_TIERS.forEach(tier => {
+            if (earned.includes(tier.id)) highest = tier;
+        });
+        return highest;
+    }
+
+    function updateProfileBadgeDisplay() {
+        const el = document.getElementById('display-medal');
+        if (!el) return;
+
+        const highest = getHighestMedal(currentUser);
+        if (highest) {
+            el.innerText = highest.icon;
+            el.title = highest.name;
+            el.style.display = 'inline';
+        } else {
+            el.innerText = '';
+            el.style.display = 'none';
+        }
+    }
+
+    function updateTableDropdown() {
+        const select = document.getElementById('table-select');
+        const prevValue = parseInt(select.value) || 2;
+        select.innerHTML = '';
+
+        for (let i = 1; i <= 10; i++) {
+            let opt = document.createElement('option');
+            opt.value = i;
+            opt.innerText = `${i}'ler Tablosu`;
+            select.appendChild(opt);
+        }
+
+        if (currentMode === 'memorize') {
+            let randomOpt = document.createElement('option');
+            randomOpt.value = 0;
+            randomOpt.innerText = '🔀 Karışık (Tüm Tablo)';
+            select.appendChild(randomOpt);
+        }
+
+        if (currentMode !== 'memorize' && prevValue === 0) {
+            select.value = 2;
+            selectedTable = 2;
+        } else {
+            select.value = prevValue;
+            selectedTable = prevValue;
+        }
+    }
+
+    function setMode(mode) {
+        currentMode = mode;
+        measureStep = mode === 'measure' ? 0 : 1;
+        document.querySelectorAll('.mode-btn').forEach(b => {
+            if(!b.classList.contains('shop-open-btn')) b.classList.remove('active-mode');
+        });
+        document.getElementById(`btn-${mode}`).classList.add('active-mode');
+
+        updateTableDropdown();
+        resetCurrentQuestion();
+    }
+
+    function resetCurrentQuestion() {
+        selectedTable = parseInt(document.getElementById('table-select').value);
+
+        if (selectedTable === 0 && currentMode === 'memorize') {
+            generateRandomQuestion();
+        } else {
+            currentTable = selectedTable;
+            currentMultiplier = 1;
+        }
+
+        measureStep = currentMode === 'measure' ? 0 : 1;
+        hasEarnedRewardForCurrent = false;
+        initApples();
+        render();
+    }
+
+    function initApples() {
+        treeApples = currentMultiplier * currentTable;
+        basketContents = Array(currentMultiplier).fill(0);
+    }
+
+    function generateRandomQuestion() {
+        currentMultiplier = Math.floor(Math.random() * 10) + 1;
+        currentTable = Math.floor(Math.random() * 10) + 1;
+    }
+
+    function nextQuestion() {
+        if (selectedTable === 0 && currentMode === 'memorize') {
+            generateRandomQuestion();
+        } else {
+            if (currentMultiplier < 10) currentMultiplier++;
+            else currentMultiplier = 1;
+        }
+        measureStep = currentMode === 'measure' ? 0 : 1;
+        hasEarnedRewardForCurrent = false;
+        initApples();
+        render();
+    }
+
+    function prevQuestion() {
+        if (selectedTable === 0 && currentMode === 'memorize') {
+            generateRandomQuestion();
+        } else {
+            if (currentMultiplier > 1) currentMultiplier--;
+            else currentMultiplier = 10;
+        }
+        measureStep = currentMode === 'measure' ? 0 : 1;
+        hasEarnedRewardForCurrent = false;
+        initApples();
+        render();
+    }
+
+    function render() {
+        document.getElementById('feedback-area').innerText = '';
+        const qHeader = document.getElementById('question-header');
+
+        if (currentMode === 'measure') {
+            qHeader.style.display = 'block';
+            qHeader.innerHTML = `${currentMultiplier} × ${currentTable} = <span style="color: var(--accent);">?</span>`;
+        } else {
+            qHeader.style.display = 'none';
+        }
+
+        renderStage();
+
+        const content = document.getElementById('content-area');
+        if (currentMode === 'learn') {
+            renderLearnMode(content);
+        } else if (currentMode === 'measure') {
+            renderMeasureMode(content);
+        } else if (currentMode === 'memorize') {
+            renderMemorizeMode(content);
+        }
+    }
+
+    function createAppleElement() {
+        let apple = document.createElement('span');
+        apple.className = 'apple';
+        apple.innerHTML = buildFruitSVG(getSelectedFruit().id);
+        return apple;
+    }
+
+    function renderStage() {
+        const stage = document.getElementById('stage-area');
+        stage.innerHTML = '';
+
+        if (currentMode === 'memorize') {
+            stage.style.display = 'none';
+            return;
+        }
+        stage.style.display = 'flex';
+
+        if (currentMode === 'learn') {
+            let basketContainer = document.createElement('div');
+            basketContainer.className = 'basket-container';
+
+            for (let i = 1; i <= currentMultiplier; i++) {
+                let wrapper = document.createElement('div');
+                wrapper.className = 'basket-wrapper';
+                wrapper.innerHTML = BASKET_SVG;
+
+                let b = document.createElement('div');
+                b.className = 'basket';
+                b.innerHTML = `<div class="basket-title">${i}. Sepet</div>`;
+
+                for (let j = 0; j < currentTable; j++) {
+                    b.appendChild(createAppleElement());
+                }
+                wrapper.appendChild(b);
+                basketContainer.appendChild(wrapper);
+            }
+            stage.appendChild(basketContainer);
+            return;
+        }
+
+        if (currentMode === 'measure') {
+            let treeWrapper = document.createElement('div');
+            treeWrapper.className = 'tree-wrapper';
+            treeWrapper.innerHTML = TREE_SVG;
+
+            let treeApplesContainer = document.createElement('div');
+            treeApplesContainer.className = 'tree-apples-container';
+
+            for (let i = 0; i < treeApples; i++) {
+                let apple = createAppleElement();
+                apple.draggable = true;
+                apple.ondragstart = (e) => e.dataTransfer.setData('text/plain', 'apple');
+                apple.onclick = () => moveAppleToNextAvailableBasket();
+                treeApplesContainer.appendChild(apple);
+            }
+
+            treeWrapper.appendChild(treeApplesContainer);
+            stage.appendChild(treeWrapper);
+
+            let basketContainer = document.createElement('div');
+            basketContainer.className = 'basket-container';
+
+            for (let i = 0; i < currentMultiplier; i++) {
+                let wrapper = document.createElement('div');
+                wrapper.className = 'basket-wrapper';
+                wrapper.innerHTML = BASKET_SVG;
+
+                let b = document.createElement('div');
+                b.className = 'basket';
+                b.dataset.index = i;
+                b.innerHTML = `<div class="basket-title">${i + 1}. Sepet</div>`;
+
+                b.ondragover = (e) => { e.preventDefault(); b.classList.add('drag-over'); };
+                b.ondragleave = () => b.classList.remove('drag-over');
+                b.ondrop = (e) => {
+                    e.preventDefault();
+                    b.classList.remove('drag-over');
+                    addAppleToBasket(i);
+                };
+
+                for (let j = 0; j < basketContents[i]; j++) {
+                    b.appendChild(createAppleElement());
+                }
+                wrapper.appendChild(b);
+                basketContainer.appendChild(wrapper);
+            }
+            stage.appendChild(basketContainer);
+        }
+    }
+
+    function addAppleToBasket(basketIndex) {
+        if (treeApples > 0) {
+            treeApples--;
+            basketContents[basketIndex]++;
+            renderStage();
+            checkApplesDistributed();
+        }
+    }
+
+    function moveAppleToNextAvailableBasket() {
+        for (let i = 0; i < basketContents.length; i++) {
+            if (basketContents[i] < currentTable) {
+                addAppleToBasket(i);
+                return;
+            }
+        }
+        addAppleToBasket(0);
+    }
+
+    function checkApplesDistributed() {
+        if (treeApples === 0) {
+            let isCorrectDistribution = basketContents.every(val => val === currentTable);
+            const feedback = document.getElementById('feedback-area');
+
+            if (isCorrectDistribution) {
+                feedback.style.color = '#2E7D32';
+                feedback.innerText = currentMultiplier === 1 
+                    ? '🎉 Harika! Elmayı sepete koydun. Şimdi sayı değerini kontrol edelim.' 
+                    : '🎉 Harika! Sepetleri doğru paylaştırdın. Şimdi toplama işlemini tamamla.';
+                setTimeout(() => {
+                    measureStep = 1;
+                    render();
+                }, 1000);
+            } else {
+                feedback.style.color = '#D32F2F';
+                feedback.innerText = `❌ Her sepet eşit (${currentTable}'şer) elma almalı! Tekrar deneyelim.`;
+                setTimeout(() => {
+                    initApples();
+                    render();
+                }, 1800);
+            }
+        }
+    }
+
+    function renderLearnMode(container) {
+        let total = currentMultiplier * currentTable;
+
+        if (currentMultiplier === 1) {
+            container.innerHTML = `
+                <div><b>1 × ${currentTable}</b> ne demektir?</div>
+                <div style="margin: 15px 0;">
+                    <span style="color: var(--accent); font-weight: 700;">1 tane ${currentTable}</span> demektir.
+                </div>
+                <div>Sepetteki elma sayısı:</div>
+                <div style="font-size: 28px; color: var(--primary-dark); font-weight: 700; margin: 10px 0;">${total} elma</div>
+                <hr style="border:0; border-top: 2px dashed #DCEDC8; margin: 15px 0;">
+                <div>O zaman: <b>1 × ${currentTable} = ${total}</b> yapar!</div>
+            `;
+        } else {
+            let additionArray = Array(currentMultiplier).fill(currentTable);
+            let additionStr = additionArray.join(' + ');
+
+            container.innerHTML = `
+                <div><b>${currentMultiplier} × ${currentTable}</b> ne demektir?</div>
+                <div style="margin: 15px 0;">
+                    <span style="color: var(--accent); font-weight: 700;">${currentMultiplier} tane ${currentTable}</span> demektir.
+                </div>
+                <div>Toplama olarak yazalım:</div>
+                <div style="font-size: 28px; color: var(--primary-dark); font-weight: 700; margin: 10px 0;">${additionStr} = ${total}</div>
+                <hr style="border:0; border-top: 2px dashed #DCEDC8; margin: 15px 0;">
+                <div>O zaman: <b>${currentMultiplier} × ${currentTable} = ${total}</b> yapar!</div>
+            `;
+        }
+    }
+
+    function renderMeasureMode(container) {
+        let total = currentMultiplier * currentTable;
+
+        if (measureStep === 0) {
+            container.innerHTML = `
+                <div style="font-size: 20px;">
+                    👉 Ağaçtaki <b>${total}</b> elmayı sepete paylaştır!<br>
+                    <small style="color: #666; font-size: 16px;">(Elmaları sepete sürükleyebilir veya üzerlerine tıklayabilirsin)</small>
+                </div>
+            `;
+        } else if (measureStep === 1) {
+            if (currentMultiplier === 1) {
+                container.innerHTML = `
+                    <div><b>Sepetteki elma sayısını yazalım:</b></div>
+                    <div style="margin: 20px 0; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                        <span style="font-size: 22px; color: var(--primary-dark); font-weight: 700;">Sepetteki Elma Sayısı =</span> 
+                        <input type="number" class="math-input" id="single-basket-total">
+                    </div>
+                    <button class="action-btn" onclick="checkAdditionStep()">Kontrol Et</button>
+                `;
+            } else {
+                let inputsHTML = '';
+                for (let i = 0; i < currentMultiplier; i++) {
+                    inputsHTML += `<input type="number" class="math-input add-input" data-index="${i}">`;
+                    if (i < currentMultiplier - 1) inputsHTML += ' <b style="font-size:26px; color: var(--primary-dark);">+</b> ';
+                }
+
+                container.innerHTML = `
+                    <div><b>Sepetlerdeki elmalara bakarak toplama işlemini tamamla:</b></div>
+                    <div style="margin: 20px 0; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 6px;">
+                        ${inputsHTML} <b style="font-size:26px; margin: 0 6px; color: var(--primary-dark);">=</b> <input type="number" class="math-input" id="add-total">
+                    </div>
+                    <button class="action-btn" onclick="checkAdditionStep()">Toplama Sonucunu Kontrol Et</button>
+                `;
+            }
+        } else if (measureStep === 2) {
+            let infoText = currentMultiplier === 1 
+                ? `<b>Tebrikler! Sepette ${total} elma olduğunu doğru belirttin.</b>`
+                : `<b>Tebrikler! Toplamayı doğru yaptın: ${Array(currentMultiplier).fill(currentTable).join(' + ')} = ${total}</b>`;
+
+            container.innerHTML = `
+                <div style="color: var(--primary-dark); font-weight: 700;">${infoText}</div>
+                <br>
+                <div><b>Şimdi bunu çarpma olarak ifade edelim:</b></div>
+                <div style="margin: 15px 0; display: flex; justify-content: center; align-items: center;">
+                    <b style="font-size:30px; color: var(--primary-dark); margin-right: 10px;">${currentMultiplier} × ${currentTable} = </b>
+                    <input type="number" class="math-input" id="mult-total">
+                </div>
+                <button class="action-btn" onclick="checkMultiplicationStep()">Çarpma Sonucunu Kontrol Et</button>
+            `;
+        }
+    }
+
+    function checkAdditionStep() {
+        const feedback = document.getElementById('feedback-area');
+        let expectedTotal = currentMultiplier * currentTable;
+
+        if (currentMultiplier === 1) {
+            const singleInput = document.getElementById('single-basket-total');
+            if (parseInt(singleInput.value) === expectedTotal) {
+                measureStep = 2;
+                render();
+            } else {
+                feedback.style.color = '#D32F2F';
+                feedback.innerText = 'Hata var! Sepetin içindeki elma sayısını dikkatlice sayıp yazmalısın.';
+            }
+        } else {
+            const inputs = document.querySelectorAll('.add-input');
+            const totalInput = document.getElementById('add-total');
+
+            let allCorrect = true;
+            inputs.forEach(input => {
+                if (parseInt(input.value) !== currentTable) allCorrect = false;
+            });
+
+            if (parseInt(totalInput.value) !== expectedTotal) allCorrect = false;
+
+            if (allCorrect) {
+                measureStep = 2;
+                render();
+            } else {
+                feedback.style.color = '#D32F2F';
+                feedback.innerText = 'Hata var! Her sepetteki elma sayısını kutulara yazıp toplama işlemini kurmalısın.';
+            }
+        }
+    }
+
+    function checkMultiplicationStep() {
+        const multInput = document.getElementById('mult-total');
+        const feedback = document.getElementById('feedback-area');
+        let expectedTotal = currentMultiplier * currentTable;
+
+        if (parseInt(multInput.value) === expectedTotal) {
+            feedback.style.color = '#2E7D32';
+            feedback.innerText = '🎉 Harika! Doğru cevap. Sonraki soruya geçebilirsin.';
+            addRewardCoins(expectedTotal);
+        } else {
+            feedback.style.color = '#D32F2F';
+            feedback.innerText = '❌ Tekrar dene!';
+        }
+    }
+
+    function renderMemorizeMode(container) {
+        container.innerHTML = `
+            ${selectedTable === 0 ? '<div style="font-size:18px; color:#555; margin-bottom:10px; font-weight:700;">🔀 Karışık Mod (Tüm Tablo)</div>' : ''}
+            <div style="font-size: 42px; margin-bottom: 20px; color: var(--primary-dark); font-weight: 700;">
+                ${currentMultiplier} × ${currentTable} = ?
+            </div>
+            <div>
+                <input type="number" class="math-input" id="memo-input" style="font-size: 32px; width: 100px; height: 60px;" autofocus onkeyup="if(event.key==='Enter') checkMemorize()">
+            </div>
+            <button class="action-btn" onclick="checkMemorize()">Cevapla</button>
+        `;
+
+        setTimeout(() => {
+            const input = document.getElementById('memo-input');
+            if (input) input.focus();
+        }, 50);
+    }
+
+    function checkMemorize() {
+        const input = document.getElementById('memo-input');
+        if (!input || !input.value) return;
+
+        const ans = parseInt(input.value);
+        const feedback = document.getElementById('feedback-area');
+        let expectedTotal = currentMultiplier * currentTable;
+
+        if (ans === expectedTotal) {
+            feedback.style.color = '#2E7D32';
+            feedback.innerText = '⭐ Harika! Doğru cevap.';
+            addRewardCoins(expectedTotal);
+            setTimeout(() => { nextQuestion(); }, 1200);
+        } else {
+            feedback.style.color = '#D32F2F';
+            feedback.innerText = '❌ Hatalı. Tekrar dene!';
+        }
+    }
+</script>
+</body>
+</html>
